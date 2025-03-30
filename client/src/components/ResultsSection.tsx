@@ -107,7 +107,7 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
         // Create the report container
         const contentDiv = document.createElement("div");
         contentDiv.classList.add("pdf-content");
-        contentDiv.style.padding = "15px";
+        contentDiv.style.padding = "10px";
         contentDiv.style.backgroundColor = "white";
         contentDiv.style.color = "black";
         
@@ -171,7 +171,7 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
           const box = document.createElement("div");
           box.style.border = "1px solid #e5e7eb";
           box.style.borderRadius = "8px";
-          box.style.padding = "15px";
+          box.style.padding = "10px";
           box.style.width = "30%";
           box.style.textAlign = "center";
           box.style.boxShadow = "0 2px 4px rgba(0,0,0,0.05)";
@@ -204,7 +204,7 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
         // Add health rating
         const ratingDiv = document.createElement("div");
         ratingDiv.style.marginBottom = "30px";
-        ratingDiv.style.padding = "15px";
+        ratingDiv.style.padding = "10px";
         ratingDiv.style.border = "1px solid #e5e7eb";
         ratingDiv.style.borderRadius = "8px";
         ratingDiv.style.backgroundColor = "#f9fafb";
@@ -264,7 +264,7 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
         positiveDiv.style.flex = "1";
         positiveDiv.style.backgroundColor = "#f0fdf4";
         positiveDiv.style.borderRadius = "8px";
-        positiveDiv.style.padding = "15px";
+        positiveDiv.style.padding = "10px";
         
         const positiveTitle = document.createElement("h4");
         positiveTitle.textContent = "Positive Elements";
@@ -293,7 +293,7 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
         improvementDiv.style.flex = "1";
         improvementDiv.style.backgroundColor = "#fef2f2";
         improvementDiv.style.borderRadius = "8px";
-        improvementDiv.style.padding = "15px";
+        improvementDiv.style.padding = "10px";
         
         const improvementTitle = document.createElement("h4");
         improvementTitle.textContent = "Areas for Improvement";
@@ -322,7 +322,7 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
         const recommendationDiv = document.createElement("div");
         recommendationDiv.style.backgroundColor = "#eff6ff";
         recommendationDiv.style.borderRadius = "8px";
-        recommendationDiv.style.padding = "15px";
+        recommendationDiv.style.padding = "10px";
         
         const recommendationTitle = document.createElement("h4");
         recommendationTitle.textContent = "Recommendation";
