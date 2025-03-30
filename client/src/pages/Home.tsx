@@ -18,6 +18,11 @@ const Home: React.FC = () => {
     mutationFn: analyzeImage,
     onSuccess: (data) => {
       setNutritionData(data);
+      toast({
+        title: "Analysis Complete",
+        description: "Your food image has been successfully analyzed.",
+        variant: "default"
+      });
     },
     onError: () => {
       toast({
@@ -35,29 +40,40 @@ const Home: React.FC = () => {
     
     // Upload the image for analysis
     uploadMutation.mutate(file);
+    
+    // Show toast for beginning analysis
+    toast({
+      title: "Analyzing Image",
+      description: "Your food image is being processed...",
+    });
   };
 
   const handleAnalyzeAnother = () => {
     // Reset states
     setImagePreview(null);
     setNutritionData(null);
+    
+    // Scroll to top for better UX
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8 bg-neutral-50 min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-grow">
-        {!uploadMutation.isPending && !nutritionData && (
-          <UploadSection onUpload={handleUpload} />
-        )}
-        <LoadingState isVisible={uploadMutation.isPending} />
-        <ResultsSection 
-          nutritionData={nutritionData} 
-          imagePreview={imagePreview}
-          onAnalyzeAnother={handleAnalyzeAnother}
-          isVisible={!uploadMutation.isPending && !!nutritionData}
-        />
-      </main>
+    <div className="min-h-screen flex flex-col">
+      <div className="container max-w-6xl mx-auto px-4 py-10">
+        <Header />
+        <main className="flex-grow">
+          {!uploadMutation.isPending && !nutritionData && (
+            <UploadSection onUpload={handleUpload} />
+          )}
+          <LoadingState isVisible={uploadMutation.isPending} />
+          <ResultsSection 
+            nutritionData={nutritionData} 
+            imagePreview={imagePreview}
+            onAnalyzeAnother={handleAnalyzeAnother}
+            isVisible={!uploadMutation.isPending && !!nutritionData}
+          />
+        </main>
+      </div>
       <Footer />
     </div>
   );
