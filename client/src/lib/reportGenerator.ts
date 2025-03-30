@@ -21,6 +21,27 @@ export const generatePDFReport = async (
       console.error('Report element not found');
       return;
     }
+
+    // We need to make sure images are fully loaded before rendering to canvas
+    const imgPromises: Promise<void>[] = [];
+    
+    // Get all images in the report element and wait for them to load
+    const images = reportRef.current.querySelectorAll('img');
+    images.forEach((img) => {
+      if (!img.complete) {
+        const promise = new Promise<void>((resolve) => {
+          img.onload = () => resolve();
+          img.onerror = () => {
+            console.error('Error loading image for PDF');
+            resolve(); // Resolve anyway to continue with PDF generation
+          };
+        });
+        imgPromises.push(promise);
+      }
+    });
+    
+    // Wait for all images to load before proceeding
+    await Promise.all(imgPromises);
     
     // Create a new PDF document
     const pdf = new jsPDF({
@@ -29,13 +50,26 @@ export const generatePDFReport = async (
       format: 'a4',
     });
 
-    // Render the report element to a canvas
+    // Render the report element to a canvas with appropriate settings
     const canvas = await html2canvas(reportRef.current, {
       scale: 2, // Higher scale for better quality
-      useCORS: true,
+      useCORS: true, // Allow loading cross-origin images
       logging: false,
-      allowTaint: true,
+      allowTaint: true, // Allow tainted canvas
       backgroundColor: '#ffffff',
+      foreignObjectRendering: false, // Sometimes setting this to false helps with rendering issues
+      onclone: (clonedDoc) => {
+        // Make the cloned document and its elements visible for rendering
+        const clonedElement = clonedDoc.querySelector('.nutrition-report');
+        if (clonedElement) {
+          (clonedElement as HTMLElement).style.visibility = 'visible';
+          (clonedElement as HTMLElement).style.position = 'static';
+          (clonedElement as HTMLElement).style.width = '800px';
+          (clonedElement as HTMLElement).style.height = 'auto';
+          (clonedElement as HTMLElement).style.top = '0';
+          (clonedElement as HTMLElement).style.left = '0';
+        }
+      }
     });
 
     // Get the image data from the canvas
@@ -82,8 +116,14 @@ export const generatePDFReport = async (
     pdf.save(`NutriScore_Report_${new Date().toISOString().split('T')[0]}.pdf`);
     
     console.log('PDF report generated successfully');
+    
+    // Show success message to user (could be replaced with a toast notification)
+    setTimeout(() => {
+      alert('PDF report downloaded successfully!');
+    }, 500);
+    
   } catch (error) {
     console.error('Error generating PDF report:', error);
-    // Show error toast or notification to the user
+    alert("There was an error generating your PDF report. Please try again.");
   }
 };

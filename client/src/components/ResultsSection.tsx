@@ -90,178 +90,284 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
 
   const handleDownloadReport = async () => {
     if (nutritionData && reportRef.current) {
-      // Clone visible content to the hidden report div
-      const contentDiv = document.createElement("div");
-      contentDiv.classList.add("pdf-content");
-      contentDiv.style.width = "800px";
-      contentDiv.style.padding = "20px";
-      
-      // Add title
-      const title = document.createElement("h1");
-      title.textContent = "NutriScore Nutrition Report";
-      title.style.textAlign = "center";
-      title.style.marginBottom = "20px";
-      title.style.fontSize = "24px";
-      title.style.fontWeight = "bold";
-      contentDiv.appendChild(title);
-      
-      // Add image if available
-      if (imagePreview) {
-        const img = document.createElement("img");
-        img.src = imagePreview;
-        img.alt = "Food Image";
-        img.style.width = "100%";
-        img.style.maxHeight = "300px";
-        img.style.objectFit = "cover";
-        img.style.borderRadius = "8px";
-        img.style.marginBottom = "20px";
-        contentDiv.appendChild(img);
+      try {
+        console.log("Building PDF report content...");
+        
+        // Clear the existing content and set up the report container
+        reportRef.current.innerHTML = '';
+        reportRef.current.style.visibility = 'hidden';
+        reportRef.current.style.position = 'absolute';
+        reportRef.current.style.top = '-9999px';
+        reportRef.current.style.left = '-9999px';
+        reportRef.current.style.width = '800px';
+        reportRef.current.style.backgroundColor = 'white';
+        reportRef.current.style.padding = '20px';
+        reportRef.current.style.fontFamily = 'Arial, sans-serif';
+        
+        // Create the report container
+        const contentDiv = document.createElement("div");
+        contentDiv.classList.add("pdf-content");
+        contentDiv.style.padding = "20px";
+        contentDiv.style.backgroundColor = "white";
+        contentDiv.style.color = "black";
+        
+        // Add title
+        const title = document.createElement("h1");
+        title.textContent = "NutriScore Nutrition Report";
+        title.style.textAlign = "center";
+        title.style.marginBottom = "20px";
+        title.style.fontSize = "24px";
+        title.style.fontWeight = "bold";
+        title.style.color = "#333";
+        contentDiv.appendChild(title);
+        
+        // Add image if available
+        if (imagePreview) {
+          const imgContainer = document.createElement("div");
+          imgContainer.style.textAlign = "center";
+          imgContainer.style.marginBottom = "20px";
+          
+          const img = document.createElement("img");
+          img.src = imagePreview;
+          img.alt = "Food Image";
+          img.style.maxWidth = "80%";
+          img.style.maxHeight = "250px";
+          img.style.objectFit = "contain";
+          img.style.borderRadius = "8px";
+          img.style.border = "1px solid #e0e0e0";
+          
+          imgContainer.appendChild(img);
+          contentDiv.appendChild(imgContainer);
+        }
+        
+        // Date of report generation
+        const dateInfo = document.createElement("p");
+        dateInfo.textContent = `Report generated on: ${new Date().toLocaleDateString()}`;
+        dateInfo.style.textAlign = "right";
+        dateInfo.style.fontSize = "12px";
+        dateInfo.style.color = "#666";
+        dateInfo.style.marginBottom = "20px";
+        contentDiv.appendChild(dateInfo);
+        
+        // Add scores
+        const scoresContainer = document.createElement("div");
+        scoresContainer.style.marginBottom = "30px";
+        
+        const scoresTitle = document.createElement("h2");
+        scoresTitle.textContent = "Nutrition Scores";
+        scoresTitle.style.fontSize = "18px";
+        scoresTitle.style.marginBottom = "15px";
+        scoresTitle.style.color = "#333";
+        scoresTitle.style.borderBottom = "1px solid #e0e0e0";
+        scoresTitle.style.paddingBottom = "5px";
+        scoresContainer.appendChild(scoresTitle);
+        
+        const scoresDiv = document.createElement("div");
+        scoresDiv.style.display = "flex";
+        scoresDiv.style.justifyContent = "space-between";
+        scoresDiv.style.gap = "15px";
+        
+        const addScoreBox = (title: string, score: number, color: string) => {
+          const box = document.createElement("div");
+          box.style.border = "1px solid #e5e7eb";
+          box.style.borderRadius = "8px";
+          box.style.padding = "15px";
+          box.style.width = "30%";
+          box.style.textAlign = "center";
+          box.style.boxShadow = "0 2px 4px rgba(0,0,0,0.05)";
+          
+          const titleEl = document.createElement("h3");
+          titleEl.textContent = title;
+          titleEl.style.fontSize = "16px";
+          titleEl.style.fontWeight = "bold";
+          titleEl.style.color = color;
+          titleEl.style.marginBottom = "10px";
+          box.appendChild(titleEl);
+          
+          const scoreEl = document.createElement("p");
+          scoreEl.textContent = `${title === 'Net Score' ? getNetScoreSign() : ''}${title === 'Net Score' ? getAbsNetScore : score}%`;
+          scoreEl.style.fontSize = "24px";
+          scoreEl.style.fontWeight = "bold";
+          scoreEl.style.color = "#333";
+          box.appendChild(scoreEl);
+          
+          return box;
+        };
+        
+        scoresDiv.appendChild(addScoreBox("Good Score", goodScore, "#10b981"));
+        scoresDiv.appendChild(addScoreBox("Bad Score", badScore, "#ef4444"));
+        scoresDiv.appendChild(addScoreBox("Net Score", netScore, healthRating === 'Poor' ? "#ef4444" : healthRating === 'Medium' ? "#f59e0b" : "#3b82f6"));
+        
+        scoresContainer.appendChild(scoresDiv);
+        contentDiv.appendChild(scoresContainer);
+        
+        // Add health rating
+        const ratingDiv = document.createElement("div");
+        ratingDiv.style.marginBottom = "30px";
+        ratingDiv.style.padding = "15px";
+        ratingDiv.style.border = "1px solid #e5e7eb";
+        ratingDiv.style.borderRadius = "8px";
+        ratingDiv.style.backgroundColor = "#f9fafb";
+        
+        const ratingTitle = document.createElement("h3");
+        ratingTitle.textContent = "Health Rating";
+        ratingTitle.style.fontSize = "18px";
+        ratingTitle.style.fontWeight = "bold";
+        ratingTitle.style.marginBottom = "10px";
+        ratingTitle.style.color = "#333";
+        ratingDiv.appendChild(ratingTitle);
+        
+        const rating = document.createElement("p");
+        rating.textContent = `Your score: ${getNetScoreSign()}${getAbsNetScore}%`;
+        rating.style.fontSize = "16px";
+        rating.style.marginBottom = "5px";
+        rating.style.color = "#333";
+        ratingDiv.appendChild(rating);
+        
+        const healthRatingText = document.createElement("p");
+        healthRatingText.textContent = `${healthRating} Health Rating`;
+        healthRatingText.style.fontSize = "16px";
+        healthRatingText.style.fontWeight = "bold";
+        healthRatingText.style.color = healthRating === 'Poor' ? "#ef4444" : healthRating === 'Medium' ? "#f59e0b" : "#3b82f6";
+        ratingDiv.appendChild(healthRatingText);
+        
+        contentDiv.appendChild(ratingDiv);
+        
+        // Add summary
+        const summaryDiv = document.createElement("div");
+        summaryDiv.style.marginBottom = "30px";
+        
+        const summaryTitle = document.createElement("h2");
+        summaryTitle.textContent = "Nutrition Summary";
+        summaryTitle.style.fontSize = "18px";
+        summaryTitle.style.marginBottom = "15px";
+        summaryTitle.style.color = "#333";
+        summaryTitle.style.borderBottom = "1px solid #e0e0e0";
+        summaryTitle.style.paddingBottom = "5px";
+        summaryDiv.appendChild(summaryTitle);
+        
+        const overview = document.createElement("p");
+        overview.textContent = summary.overview;
+        overview.style.marginBottom = "20px";
+        overview.style.color = "#333";
+        overview.style.lineHeight = "1.5";
+        summaryDiv.appendChild(overview);
+        
+        // Two columns layout for positive and negative
+        const columnsDiv = document.createElement("div");
+        columnsDiv.style.display = "flex";
+        columnsDiv.style.gap = "20px";
+        columnsDiv.style.marginBottom = "20px";
+        
+        // Add positive elements
+        const positiveDiv = document.createElement("div");
+        positiveDiv.style.flex = "1";
+        positiveDiv.style.backgroundColor = "#f0fdf4";
+        positiveDiv.style.borderRadius = "8px";
+        positiveDiv.style.padding = "15px";
+        
+        const positiveTitle = document.createElement("h4");
+        positiveTitle.textContent = "Positive Elements";
+        positiveTitle.style.fontSize = "16px";
+        positiveTitle.style.fontWeight = "bold";
+        positiveTitle.style.marginBottom = "10px";
+        positiveTitle.style.color = "#10b981";
+        positiveDiv.appendChild(positiveTitle);
+        
+        const positiveList = document.createElement("ul");
+        positiveList.style.paddingLeft = "20px";
+        positiveList.style.marginBottom = "0";
+        summary.positiveElements.forEach(element => {
+          const item = document.createElement("li");
+          item.textContent = element;
+          item.style.marginBottom = "5px";
+          item.style.color = "#333";
+          positiveList.appendChild(item);
+        });
+        positiveDiv.appendChild(positiveList);
+        
+        columnsDiv.appendChild(positiveDiv);
+        
+        // Add improvement areas
+        const improvementDiv = document.createElement("div");
+        improvementDiv.style.flex = "1";
+        improvementDiv.style.backgroundColor = "#fef2f2";
+        improvementDiv.style.borderRadius = "8px";
+        improvementDiv.style.padding = "15px";
+        
+        const improvementTitle = document.createElement("h4");
+        improvementTitle.textContent = "Areas for Improvement";
+        improvementTitle.style.fontSize = "16px";
+        improvementTitle.style.fontWeight = "bold";
+        improvementTitle.style.marginBottom = "10px";
+        improvementTitle.style.color = "#ef4444";
+        improvementDiv.appendChild(improvementTitle);
+        
+        const improvementList = document.createElement("ul");
+        improvementList.style.paddingLeft = "20px";
+        improvementList.style.marginBottom = "0";
+        summary.areasForImprovement.forEach(area => {
+          const item = document.createElement("li");
+          item.textContent = area;
+          item.style.marginBottom = "5px";
+          item.style.color = "#333";
+          improvementList.appendChild(item);
+        });
+        improvementDiv.appendChild(improvementList);
+        
+        columnsDiv.appendChild(improvementDiv);
+        summaryDiv.appendChild(columnsDiv);
+        
+        // Add recommendation
+        const recommendationDiv = document.createElement("div");
+        recommendationDiv.style.backgroundColor = "#eff6ff";
+        recommendationDiv.style.borderRadius = "8px";
+        recommendationDiv.style.padding = "15px";
+        
+        const recommendationTitle = document.createElement("h4");
+        recommendationTitle.textContent = "Recommendation";
+        recommendationTitle.style.fontSize = "16px";
+        recommendationTitle.style.fontWeight = "bold";
+        recommendationTitle.style.marginBottom = "10px";
+        recommendationTitle.style.color = "#3b82f6";
+        recommendationDiv.appendChild(recommendationTitle);
+        
+        const recommendation = document.createElement("p");
+        recommendation.textContent = summary.recommendation;
+        recommendation.style.color = "#333";
+        recommendation.style.lineHeight = "1.5";
+        recommendation.style.marginBottom = "0";
+        recommendationDiv.appendChild(recommendation);
+        
+        summaryDiv.appendChild(recommendationDiv);
+        contentDiv.appendChild(summaryDiv);
+        
+        // Footer
+        const footer = document.createElement("div");
+        footer.style.borderTop = "1px solid #e0e0e0";
+        footer.style.paddingTop = "15px";
+        footer.style.marginTop = "30px";
+        footer.style.textAlign = "center";
+        
+        const footerText = document.createElement("p");
+        footerText.textContent = "NutriScore - Your nutrition analysis companion";
+        footerText.style.fontSize = "12px";
+        footerText.style.color = "#666";
+        footer.appendChild(footerText);
+        
+        contentDiv.appendChild(footer);
+        
+        // Add the content to the report ref
+        reportRef.current.appendChild(contentDiv);
+        
+        console.log("PDF content generated, proceeding to PDF creation...");
+        
+        // Generate the PDF
+        await generatePDFReport(nutritionData, imagePreview, reportRef);
+      } catch (error) {
+        console.error("Error preparing PDF report:", error);
+        alert("There was an error generating your PDF report. Please try again.");
       }
-      
-      // Add scores
-      const scoresDiv = document.createElement("div");
-      scoresDiv.style.display = "flex";
-      scoresDiv.style.justifyContent = "space-between";
-      scoresDiv.style.marginBottom = "20px";
-      
-      const addScoreBox = (title: string, score: number, color: string) => {
-        const box = document.createElement("div");
-        box.style.border = "1px solid #e5e7eb";
-        box.style.borderRadius = "8px";
-        box.style.padding = "15px";
-        box.style.width = "30%";
-        box.style.textAlign = "center";
-        
-        const titleEl = document.createElement("h3");
-        titleEl.textContent = title;
-        titleEl.style.fontSize = "16px";
-        titleEl.style.fontWeight = "bold";
-        titleEl.style.color = color;
-        titleEl.style.marginBottom = "10px";
-        box.appendChild(titleEl);
-        
-        const scoreEl = document.createElement("p");
-        scoreEl.textContent = `${title === 'Net Score' ? getNetScoreSign() : ''}${title === 'Net Score' ? getAbsNetScore : score}%`;
-        scoreEl.style.fontSize = "24px";
-        scoreEl.style.fontWeight = "bold";
-        box.appendChild(scoreEl);
-        
-        return box;
-      };
-      
-      scoresDiv.appendChild(addScoreBox("Good Score", goodScore, "#10b981"));
-      scoresDiv.appendChild(addScoreBox("Bad Score", badScore, "#ef4444"));
-      scoresDiv.appendChild(addScoreBox("Net Score", netScore, healthRating === 'Poor' ? "#ef4444" : healthRating === 'Medium' ? "#f59e0b" : "#3b82f6"));
-      
-      contentDiv.appendChild(scoresDiv);
-      
-      // Add health rating
-      const ratingDiv = document.createElement("div");
-      ratingDiv.style.marginBottom = "20px";
-      ratingDiv.style.padding = "10px";
-      ratingDiv.style.border = "1px solid #e5e7eb";
-      ratingDiv.style.borderRadius = "8px";
-      
-      const ratingTitle = document.createElement("h3");
-      ratingTitle.textContent = "Health Rating";
-      ratingTitle.style.fontSize = "18px";
-      ratingTitle.style.fontWeight = "bold";
-      ratingTitle.style.marginBottom = "10px";
-      ratingDiv.appendChild(ratingTitle);
-      
-      const rating = document.createElement("p");
-      rating.textContent = `Your score: ${getNetScoreSign()}${getAbsNetScore}% (${healthRating} Health Rating)`;
-      rating.style.fontSize = "16px";
-      ratingDiv.appendChild(rating);
-      
-      contentDiv.appendChild(ratingDiv);
-      
-      // Add summary
-      const summaryDiv = document.createElement("div");
-      summaryDiv.style.marginBottom = "20px";
-      
-      const summaryTitle = document.createElement("h3");
-      summaryTitle.textContent = "Nutrition Summary";
-      summaryTitle.style.fontSize = "18px";
-      summaryTitle.style.fontWeight = "bold";
-      summaryTitle.style.marginBottom = "10px";
-      summaryDiv.appendChild(summaryTitle);
-      
-      const overview = document.createElement("p");
-      overview.textContent = summary.overview;
-      overview.style.marginBottom = "15px";
-      summaryDiv.appendChild(overview);
-      
-      contentDiv.appendChild(summaryDiv);
-      
-      // Add positive elements
-      const positiveDiv = document.createElement("div");
-      positiveDiv.style.marginBottom = "20px";
-      
-      const positiveTitle = document.createElement("h4");
-      positiveTitle.textContent = "Positive Elements";
-      positiveTitle.style.fontSize = "16px";
-      positiveTitle.style.fontWeight = "bold";
-      positiveTitle.style.marginBottom = "5px";
-      positiveDiv.appendChild(positiveTitle);
-      
-      const positiveList = document.createElement("ul");
-      positiveList.style.paddingLeft = "20px";
-      summary.positiveElements.forEach(element => {
-        const item = document.createElement("li");
-        item.textContent = element;
-        item.style.marginBottom = "3px";
-        positiveList.appendChild(item);
-      });
-      positiveDiv.appendChild(positiveList);
-      
-      contentDiv.appendChild(positiveDiv);
-      
-      // Add improvement areas
-      const improvementDiv = document.createElement("div");
-      improvementDiv.style.marginBottom = "20px";
-      
-      const improvementTitle = document.createElement("h4");
-      improvementTitle.textContent = "Areas for Improvement";
-      improvementTitle.style.fontSize = "16px";
-      improvementTitle.style.fontWeight = "bold";
-      improvementTitle.style.marginBottom = "5px";
-      improvementDiv.appendChild(improvementTitle);
-      
-      const improvementList = document.createElement("ul");
-      improvementList.style.paddingLeft = "20px";
-      summary.areasForImprovement.forEach(area => {
-        const item = document.createElement("li");
-        item.textContent = area;
-        item.style.marginBottom = "3px";
-        improvementList.appendChild(item);
-      });
-      improvementDiv.appendChild(improvementList);
-      
-      contentDiv.appendChild(improvementDiv);
-      
-      // Add recommendation
-      const recommendationDiv = document.createElement("div");
-      
-      const recommendationTitle = document.createElement("h4");
-      recommendationTitle.textContent = "Recommendation";
-      recommendationTitle.style.fontSize = "16px";
-      recommendationTitle.style.fontWeight = "bold";
-      recommendationTitle.style.marginBottom = "5px";
-      recommendationDiv.appendChild(recommendationTitle);
-      
-      const recommendation = document.createElement("p");
-      recommendation.textContent = summary.recommendation;
-      recommendationDiv.appendChild(recommendation);
-      
-      contentDiv.appendChild(recommendationDiv);
-      
-      // Clear the report div and add the new content
-      reportRef.current.innerHTML = '';
-      reportRef.current.appendChild(contentDiv);
-      
-      // Generate the PDF
-      await generatePDFReport(nutritionData, imagePreview, reportRef);
     }
   };
 
