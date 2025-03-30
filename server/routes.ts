@@ -34,23 +34,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Handle request body for POST/PUT requests
       if (['POST', 'PUT'].includes(req.method || '')) {
         if (req.headers['content-type']?.includes('multipart/form-data')) {
-          // For file uploads, stream the raw body
-          const response = await fetch(url, {
+          // For file uploads, forward the request directly to Flask
+          // Need to use http module to handle this properly
+          const http = await import('http');
+          
+          // Create a proxy request to Flask
+          const proxyReq = http.request({
+            host: 'localhost',
+            port: 8000,
+            path: req.url,
             method: req.method,
-            body: req,
-            headers,
-            duplex: 'half',
+            headers: headers,
           });
           
-          // Copy status and headers from Flask response
-          res.status(response.status);
-          response.headers.forEach((value, key) => {
-            res.set(key, value);
+          // Pipe the client request to Flask
+          req.pipe(proxyReq, { end: true });
+          
+          // Handle the Flask response and pipe it back to client
+          proxyReq.on('response', (proxyRes) => {
+            res.writeHead(proxyRes.statusCode || 200, proxyRes.headers);
+            proxyRes.pipe(res, { end: true });
           });
           
-          // Stream the response back
-          const data = await response.arrayBuffer();
-          res.send(Buffer.from(data));
+          // Handle any errors
+          proxyReq.on('error', (err) => {
+            console.error('Proxy request error:', err);
+            if (!res.headersSent) {
+              res.status(502).json({ error: 'Bad Gateway' });
+            }
+          });
+          
+          // No need to continue since we're handling the response through piping
+          return;
         } else {
           // For JSON data
           fetchOptions.body = JSON.stringify(req.body);
