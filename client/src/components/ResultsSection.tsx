@@ -107,7 +107,7 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
         // Create the report container
         const contentDiv = document.createElement("div");
         contentDiv.classList.add("pdf-content");
-        contentDiv.style.padding = "20px";
+        contentDiv.style.padding = "15px";
         contentDiv.style.backgroundColor = "white";
         contentDiv.style.color = "black";
         
@@ -115,8 +115,8 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
         const title = document.createElement("h1");
         title.textContent = "NutriScore Nutrition Report";
         title.style.textAlign = "center";
-        title.style.marginBottom = "20px";
-        title.style.fontSize = "24px";
+        title.style.marginBottom = "16px";
+        title.style.fontSize = "18px";
         title.style.fontWeight = "bold";
         title.style.color = "#333";
         contentDiv.appendChild(title);
@@ -155,8 +155,8 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
         
         const scoresTitle = document.createElement("h2");
         scoresTitle.textContent = "Nutrition Scores";
-        scoresTitle.style.fontSize = "18px";
-        scoresTitle.style.marginBottom = "15px";
+        scoresTitle.style.fontSize = "16px";
+        scoresTitle.style.marginBottom = "12px";
         scoresTitle.style.color = "#333";
         scoresTitle.style.borderBottom = "1px solid #e0e0e0";
         scoresTitle.style.paddingBottom = "5px";
@@ -186,7 +186,7 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
           
           const scoreEl = document.createElement("p");
           scoreEl.textContent = `${title === 'Net Score' ? getNetScoreSign() : ''}${title === 'Net Score' ? getAbsNetScore : score}%`;
-          scoreEl.style.fontSize = "24px";
+          scoreEl.style.fontSize = "20px";
           scoreEl.style.fontWeight = "bold";
           scoreEl.style.color = "#333";
           box.appendChild(scoreEl);
@@ -211,7 +211,7 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
         
         const ratingTitle = document.createElement("h3");
         ratingTitle.textContent = "Health Rating";
-        ratingTitle.style.fontSize = "18px";
+        ratingTitle.style.fontSize = "16px";
         ratingTitle.style.fontWeight = "bold";
         ratingTitle.style.marginBottom = "10px";
         ratingTitle.style.color = "#333";
@@ -239,7 +239,7 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
         
         const summaryTitle = document.createElement("h2");
         summaryTitle.textContent = "Nutrition Summary";
-        summaryTitle.style.fontSize = "18px";
+        summaryTitle.style.fontSize = "16px";
         summaryTitle.style.marginBottom = "15px";
         summaryTitle.style.color = "#333";
         summaryTitle.style.borderBottom = "1px solid #e0e0e0";
