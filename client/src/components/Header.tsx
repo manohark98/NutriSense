@@ -7,7 +7,7 @@ const Header: React.FC = () => {
       
       <div className="inline-block relative">
         <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent mb-3">
-          NutriScore
+          NutriSense
         </h1>
         <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-primary to-blue-600 rounded-full"></div>
       </div>

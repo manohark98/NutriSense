@@ -3,9 +3,11 @@ export interface NutritionSummary {
   positiveElements: string[];
   areasForImprovement: string[];
   recommendation: string;
+  extracted_text: string;
 }
 
 export interface NutritionData {
+  extracted_text: string;
   goodScore: number;
   badScore: number;
   netScore: number;

@@ -28,7 +28,7 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
 
   if (!isVisible || !nutritionData) return null;
 
-  const { goodScore, badScore, netScore, healthRating, summary } = nutritionData;
+  const {extracted_text, goodScore, badScore, netScore, healthRating, summary } = nutritionData;
   
   const getHealthRatingColor = () => {
     switch (healthRating) {
@@ -641,7 +641,7 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
               Recommendation
             </h4>
             <p className="text-slate-600 leading-relaxed">
-              {summary.recommendation}
+              {summary.recommendation} {summary.extracted_text}
             </p>
           </div>
         </div>

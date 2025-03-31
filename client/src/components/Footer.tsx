@@ -7,7 +7,7 @@ const Footer: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
             <div className="font-bold text-xl bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
-              NutriScore
+              NutriSense
             </div>
             <p className="text-slate-400 mt-2 text-sm">Smart nutritional analysis at your fingertips</p>
           </div>
@@ -34,7 +34,7 @@ const Footer: React.FC = () => {
         </div>
         
         <div className="border-t border-slate-800 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-slate-400">
-          <p>© {new Date().getFullYear()} NutriScore. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} NutriSense. All rights reserved.</p>
           <div className="flex items-center mt-3 md:mt-0">
             <span className="h-2 w-2 rounded-full bg-primary"></span>
             <span className="ml-2">Powered by advanced nutritional AI analysis</span>

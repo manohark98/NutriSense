@@ -5,11 +5,12 @@ export async function analyzeImage(image: File): Promise<NutritionData> {
   const formData = new FormData();
   formData.append('image', image);
 
-  const response = await fetch('/api/analyze', {
+  const response = await fetch('http://localhost:5000/api/analyze', {
     method: 'POST',
     body: formData,
     credentials: 'include',
   });
+
 
   if (!response.ok) {
     const text = await response.text();

@@ -17,7 +17,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api', async (req, res) => {
     try {
       // The Flask server already has /api prefix in its routes
-      const url = `http://localhost:8000/api${req.url}`;
+      const url = `http://127.0.0.1:8000/api${req.url}`;
       
       const headers: Record<string, string> = {};
       // Copy headers from the incoming request except host
@@ -41,7 +41,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Create a proxy request to Flask
           const proxyReq = http.request({
-            host: 'localhost',
+            host: '127.0.0.1',
             port: 8000,
             path: `/api${req.url}`,
             method: req.method,
@@ -107,7 +107,7 @@ function startFlaskServer() {
   
   console.log('Starting Flask server...');
   
-  const flaskProcess = spawn('python3', [flaskScriptPath], {
+  const flaskProcess = spawn('python', [flaskScriptPath], {
     stdio: 'pipe',
     env: process.env,
   });
