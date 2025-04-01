@@ -1,6 +1,6 @@
 # NutriSense: Uncover Your Food's Hidden Health Score
 
-NutriSense is an innovative food nutrition analysis application powered by Generative AI. It processes an uploaded food label image, extracts text using OCR, and then leverages a custom Yuka-inspired metric along with a cutting-edge LLM API to calculate detailed nutrition scores and provide dynamic summary insights. These insights help users understand the nutritional benefits, risks, and improvement areas of their food products.
+NutriSense is for food nutrition analysis application powered by Generative AI. It processes an uploaded food label image, extracts text using OCR, and then leverages a custom Yuka-inspired metric along with a cutting-edge LLM API to calculate detailed nutrition scores and provide dynamic summary insights. These insights help users understand the nutritional benefits, risks, and improvement areas of their food products.
 
 ---
 
